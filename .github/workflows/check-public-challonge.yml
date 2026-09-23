@@ -1,0 +1,41 @@
+name: Check public Challonge source
+on:
+  push:
+    branches: [fix/public-challonge-feed]
+    paths: [.github/workflows/check-public-challonge.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-public-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Read only public tournament endpoints
+        shell: python
+        run: |
+          import urllib.request, urllib.error, re, json
+          urls = ['https://challonge.com/cyr6hff7.json', 'https://challonge.com/ru/cyr6hff7/module', 'https://challonge.com/ru/cyr6hff7']
+          for url in urls:
+              print('\nPUBLIC_SOURCE_START', url, flush=True)
+              try:
+                  request = urllib.request.Request(url, headers={'User-Agent': 'PhygitalBroadcastBracket/1.1 (public tournament read-only)', 'Accept': 'application/json,text/html'})
+                  with urllib.request.urlopen(request, timeout=20) as response:
+                      raw = response.read(1500000).decode('utf-8', errors='replace')
+                      print('HTTP', response.status, 'TYPE', response.headers.get('Content-Type'), 'SIZE', len(raw), flush=True)
+                  if raw.lstrip().startswith(('{', '[')):
+                      print(raw[:200000], flush=True)
+                  else:
+                      scripts = re.findall(r'<script\b[^>]*>.*?</script>', raw, re.I | re.S)
+                      for script in scripts:
+                          if any(word in script.lower() for word in ['match', 'participant', 'tournament', 'bracket']):
+                              print('SOURCE_SCRIPT', script[:200000], flush=True)
+                      attrs = re.findall(r'<[^>]+\bdata-(?:react-props|props|component|bracket)[^>]*>', raw, re.I | re.S)
+                      for attr in attrs:
+                          print('SOURCE_ATTRIBUTE', attr[:200000], flush=True)
+                      print('HTML_HEAD', raw[:8000], flush=True)
+              except urllib.error.HTTPError as error:
+                  print('HTTP_ERROR', error.code, str(error), flush=True)
+              except Exception as error:
+                  print('FETCH_ERROR', type(error).__name__, str(error), flush=True)
+              print('PUBLIC_SOURCE_END', flush=True)
