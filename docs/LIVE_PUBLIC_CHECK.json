@@ -1,0 +1,125 @@
+{
+  "checkedAt": "2026-09-23T07:43:49.124Z",
+  "upstreamHttp": 200,
+  "sourceUrl": "https://challonge.com/ru/cyr6hff7/module",
+  "adapterVersion": "public-1.1.0",
+  "credentialsUsed": false,
+  "matches": 38,
+  "participants": 20,
+  "completed": 18,
+  "allScoresCheckedAgainstRawGames": true,
+  "allWinnersCheckedAgainstSource": true,
+  "allRoutesValidated": true,
+  "serviceCacheAndRecoveryPassed": true,
+  "frameVersion": "75a341f20070426b34da",
+  "examples": [
+    {
+      "match": 1,
+      "teams": [
+        "Черепахи ДГТУ",
+        "Хищные Бобры"
+      ],
+      "scores": [
+        21,
+        8
+      ],
+      "state": "complete"
+    },
+    {
+      "match": 9,
+      "teams": [
+        "Легион",
+        "Черепахи ДГТУ"
+      ],
+      "scores": [
+        20,
+        11
+      ],
+      "state": "complete"
+    },
+    {
+      "match": 12,
+      "teams": [
+        "Donstu Esports",
+        "ОСА"
+      ],
+      "scores": [
+        15,
+        1
+      ],
+      "state": "complete"
+    },
+    {
+      "match": 13,
+      "teams": [
+        "Tobolsk WinX",
+        "RE:CREW"
+      ],
+      "scores": [
+        23,
+        13
+      ],
+      "state": "complete"
+    },
+    {
+      "match": 17,
+      "teams": [
+        "Черепахи ДГТУ",
+        "Tobolsk WinX"
+      ],
+      "scores": [
+        22,
+        12
+      ],
+      "state": "complete"
+    },
+    {
+      "match": 19,
+      "teams": [
+        "ony2x",
+        "Черепашки"
+      ],
+      "scores": [
+        15,
+        20
+      ],
+      "state": "complete"
+    },
+    {
+      "match": 21,
+      "teams": [
+        "Легион",
+        "VZ_TEAM Волжская Застава"
+      ],
+      "scores": [
+        null,
+        null
+      ],
+      "state": "open"
+    },
+    {
+      "match": 27,
+      "teams": [
+        "ПРОИГР. M23",
+        "Черепахи ДГТУ"
+      ],
+      "scores": [
+        null,
+        null
+      ],
+      "state": "pending"
+    },
+    {
+      "match": 38,
+      "teams": [
+        "ПОБ. M36",
+        "ПОБ. M37"
+      ],
+      "scores": [
+        null,
+        null
+      ],
+      "state": "pending"
+    }
+  ]
+}

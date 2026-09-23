@@ -1,0 +1,58 @@
+name: Build and verify public bracket
+on:
+  push:
+    branches: [fix/public-challonge-feed]
+    paths: [.bootstrap/**, .github/workflows/apply-public-source.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: public-bracket-bootstrap
+  cancel-in-progress: false
+jobs:
+  verify-and-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/public-challonge-feed
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Expand checksum-verified prepared source
+        shell: python
+        run: |
+          from pathlib import Path, PurePosixPath
+          import base64, hashlib, zipfile, io
+          parts = [Path(f'.bootstrap/part{i:02}.b64') for i in range(1,5)]
+          payload = ''.join(p.read_text().strip() for p in parts)
+          data = base64.b64decode(payload, validate=True)
+          expected = '148a43684e464638fbdc6538f35c2d6faf4a8fff9246426726c13c68dc05d681'
+          assert hashlib.sha256(data).hexdigest() == expected, 'Source transport checksum mismatch'
+          with zipfile.ZipFile(io.BytesIO(data)) as archive:
+              assert sum(i.file_size for i in archive.infolist()) < 300000
+              for item in archive.infolist():
+                  path = PurePosixPath(item.filename)
+                  assert not path.is_absolute() and '..' not in path.parts
+                  assert not str(path).startswith(('.github/', '.git/', '.env'))
+                  assert (item.external_attr >> 16) & 0o170000 != 0o120000
+              archive.extractall('.')
+          print('Prepared source checksum verified; all files extracted as readable code.')
+      - name: Restore original designer assets with SHA-256 verification
+        run: node scripts/restore-public-assets.mjs
+      - name: Test point totals, match mapping, caching, and failure recovery
+        run: npm test
+      - name: Check all 38 matches against actual public Challonge data
+        run: npm run verify:live
+      - name: Save verified app and report on the feature branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lib api public package.json vercel.json server.mjs .gitignore .vercelignore README.md test scripts docs
+          if git diff --cached --quiet; then echo 'No source changes to commit'; else
+            git commit -m 'Implement verified public Challonge feed without credentials'
+            git push origin HEAD:fix/public-challonge-feed
+          fi

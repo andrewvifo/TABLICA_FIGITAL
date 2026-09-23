@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+test
+scripts
+docs
+README.md
+TEST_REPORT.md
+server.mjs
+*.log
